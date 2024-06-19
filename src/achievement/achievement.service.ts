@@ -4,12 +4,12 @@ import { UpdateAchievementDto } from './dto/update-achievement.dto';
 
 @Injectable()
 export class AchievementService {
-  private readonly achievements: CreateAchievementDto[] = [];
+  private achievements: CreateAchievementDto[] = [];
 
   findAll() {
     return {
       success: true,
-      achievements: this.achievements,
+      data: this.achievements,
     };
   }
 
@@ -33,16 +33,34 @@ export class AchievementService {
       return acc;
     }, undefined);
 
-    if (achievement) return achievement;
-    return { data: `This action returns id# ${id} achievement` };
+    return {
+      success: true,
+      data: {
+        ...achievement,
+      },
+    };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateOne(id: number, updateAchievementDto: UpdateAchievementDto) {
-    return `This action updates a #${id} achievement`;
+    let [achievement] = this.achievements.filter((ach) => ach.id === id);
+    achievement = { ...achievement, ...updateAchievementDto };
+
+    this.achievements = this.achievements.map((item) => {
+      return item.id === id ? achievement : item;
+    });
+
+    return {
+      success: true,
+      data: { ...achievement },
+    };
   }
 
   deleteOne(id: number) {
-    return `This action removes a #${id} achievement`;
+    const achievement = this.achievements.find((item) => item.id === id);
+    this.achievements = this.achievements.filter((item) => item.id !== id);
+    return {
+      success: true,
+      data: { ...achievement },
+    };
   }
 }
