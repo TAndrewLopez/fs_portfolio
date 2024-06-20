@@ -7,7 +7,6 @@ import { DatabaseService } from 'src/database/database.service';
 @Module({
   controllers: [AchievementController],
   providers: [AchievementService, DatabaseService],
-  exports: [AchievementService],
 })
 export class AchievementModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -44,10 +44,11 @@ model Message {
 model Project {
   id          Int      @id @default(autoincrement())
   name        String
-  title       String
   description String
-  liveLink    String
-  gitHubLink  String
+  siteUrl     String
+  githubUrl   String
+  imageUrl    String
+  videoUrl    String
   highlighted Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

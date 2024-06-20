@@ -19,32 +19,32 @@ import { UpdateAchievementDto } from './dto/update-achievement.dto';
 export class AchievementController {
   constructor(private readonly achievementService: AchievementService) {}
 
-  @Get()
-  async findAll(): Promise<AchievementModel[]> {
-    return this.achievementService.findAll();
-  }
-
   @Post()
-  createOne(
+  async createOne(
     @Body(ValidationPipe) createAchievementDto: CreateAchievementDto,
   ): Promise<AchievementModel> {
     return this.achievementService.createOne(createAchievementDto);
   }
 
+  @Get()
+  async findAll(): Promise<AchievementModel[]> {
+    return this.achievementService.findAll();
+  }
+
   @Patch(':id')
-  update(
+  async updateOne(
     @Param('id', ParseIntPipe)
     id: number,
     @Body(ValidationPipe) updateAchievementDto: UpdateAchievementDto,
   ): Promise<AchievementModel> {
     return this.achievementService.updateOne({
       where: { id },
-      data: { ...updateAchievementDto },
+      data: updateAchievementDto,
     });
   }
 
   @Delete(':id')
-  deleteAchievement(
+  async deleteOne(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<AchievementModel> {
     return this.achievementService.deleteOne({ id });
