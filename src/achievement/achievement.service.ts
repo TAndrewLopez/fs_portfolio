@@ -1,22 +1,15 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Achievement as AchievementModel, Prisma } from '@prisma/client';
+
 import { DatabaseService } from 'src/database/database.service';
+import { PrismaErrorService } from 'src/utils/prismaErrorService/prismaErrorHandler.service';
 
 @Injectable()
 export class AchievementService {
-  constructor(private readonly prisma: DatabaseService) {}
-
-  async findAll(): Promise<AchievementModel[]> {
-    try {
-      return await this.prisma.achievement.findMany();
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
+  constructor(
+    private readonly prisma: DatabaseService,
+    private readonly prismaErrorService: PrismaErrorService,
+  ) {}
 
   async createOne(
     data: Prisma.AchievementCreateInput,
@@ -26,7 +19,15 @@ export class AchievementService {
         data,
       });
     } catch (error) {
-      this.handleError(error);
+      this.prismaErrorService.handleError(error);
+    }
+  }
+
+  async findAll(): Promise<AchievementModel[]> {
+    try {
+      return await this.prisma.achievement.findMany();
+    } catch (error) {
+      this.prismaErrorService.handleError(error);
     }
   }
 
@@ -41,7 +42,7 @@ export class AchievementService {
         where,
       });
     } catch (error) {
-      this.handleError(error);
+      this.prismaErrorService.handleError(error);
     }
   }
 
@@ -53,26 +54,7 @@ export class AchievementService {
         where,
       });
     } catch (error) {
-      this.handleError(error);
+      this.prismaErrorService.handleError(error);
     }
-  }
-
-  private handleError(error: any): void {
-    if (error instanceof Prisma.PrismaClientValidationError) {
-      throw new BadRequestException(
-        'Failed validation. Check input data and try again.',
-      );
-    } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      switch (error.code) {
-        case 'P2002':
-          throw new BadRequestException('Duplicate entry.');
-        case 'P2025':
-          throw new BadRequestException('Record was not found.');
-      }
-    }
-
-    throw new InternalServerErrorException(
-      'Internal Server Error, please try again.',
-    );
   }
 }

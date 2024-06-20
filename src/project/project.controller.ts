@@ -10,8 +10,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Project as ProjectModel } from '@prisma/client';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { CreateProjectDto } from './dto/createProject';
+import { UpdateProjectDto } from './dto/updateProject.dto';
 import { ProjectService } from './project.service';
 
 @Controller('project')

@@ -12,8 +12,8 @@ import {
 import { Achievement as AchievementModel } from '@prisma/client';
 
 import { AchievementService } from './achievement.service';
-import { CreateAchievementDto } from './dto/create-achievement.dto';
-import { UpdateAchievementDto } from './dto/update-achievement.dto';
+import { CreateAchievementDto } from './dto/createAchievement.dto';
+import { UpdateAchievementDto } from './dto/updateAchievement.dto';
 
 @Controller('achievement')
 export class AchievementController {

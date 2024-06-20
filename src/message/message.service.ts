@@ -1,49 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, Project as ProjectModel } from '@prisma/client';
+import { Message as MessageModel, Prisma } from '@prisma/client';
 
 import { DatabaseService } from 'src/database/database.service';
 import { PrismaErrorService } from 'src/utils/prismaErrorService/prismaErrorHandler.service';
 
 @Injectable()
-export class ProjectService {
+export class MessageService {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly prismaErrorService: PrismaErrorService,
   ) {}
 
-  async createOne(data: Prisma.ProjectCreateInput): Promise<ProjectModel> {
+  async createOne(data: Prisma.MessageCreateInput): Promise<MessageModel> {
     try {
-      return await this.prisma.project.create({ data });
+      return await this.prisma.message.create({ data });
     } catch (error) {
       this.prismaErrorService.handleError(error);
     }
   }
 
-  async findAll(): Promise<ProjectModel[]> {
+  async findOne(where: Prisma.MessageWhereUniqueInput) {
     try {
-      return await this.prisma.project.findMany();
+      return await this.prisma.message.findUnique({ where });
     } catch (error) {
       this.prismaErrorService.handleError(error);
     }
   }
 
-  // TODO: UPDATE ERROR HANDLING TO THROW ERROR IF NOT PROJECT IS FOUND.
-  async findOne(where: Prisma.ProjectWhereUniqueInput): Promise<ProjectModel> {
+  async findAll(): Promise<MessageModel[]> {
     try {
-      const project = await this.prisma.project.findUnique({ where });
-      return project;
+      return await this.prisma.message.findMany();
     } catch (error) {
       this.prismaErrorService.handleError(error);
     }
   }
 
   async updateOne(params: {
-    where: Prisma.ProjectWhereUniqueInput;
-    data: Prisma.ProjectUpdateInput;
-  }): Promise<ProjectModel> {
+    where: Prisma.MessageWhereUniqueInput;
+    data: Prisma.MessageUpdateInput;
+  }): Promise<MessageModel> {
     try {
       const { where, data } = params;
-      return await this.prisma.project.update({
+      return await this.prisma.message.update({
         data,
         where,
       });
@@ -52,11 +50,11 @@ export class ProjectService {
     }
   }
 
-  async deleteOne(where: Prisma.ProjectWhereUniqueInput) {
+  async deleteOne(
+    where: Prisma.MessageWhereUniqueInput,
+  ): Promise<MessageModel> {
     try {
-      return await this.prisma.project.delete({
-        where,
-      });
+      return await this.prisma.message.delete({ where });
     } catch (error) {
       this.prismaErrorService.handleError(error);
     }
