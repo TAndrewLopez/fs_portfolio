@@ -1,66 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAchievementDto } from './dto/create-achievement.dto';
-import { UpdateAchievementDto } from './dto/update-achievement.dto';
+import { DatabaseService } from 'src/database/database.service';
+import { Achievement, Prisma } from '@prisma/client';
 
 @Injectable()
 export class AchievementService {
-  private achievements: CreateAchievementDto[] = [];
+  constructor(private readonly prisma: DatabaseService) {}
 
-  findAll() {
-    return {
-      success: true,
-      data: this.achievements,
-    };
+  async findAll(): Promise<Achievement[]> {
+    return this.prisma.achievement.findMany();
   }
 
-  createOne(createAchievementDto: CreateAchievementDto) {
-    const newAchievement = {
-      id: this.achievements.length + 1,
-      ...createAchievementDto,
-    };
-
-    this.achievements.push(newAchievement);
-
-    return {
-      success: true,
-      data: { ...newAchievement },
-    };
-  }
-
-  findOne(id: number) {
-    const achievement = this.achievements.reduce((acc, el) => {
-      if (id == el.id) return el;
-      return acc;
-    }, undefined);
-
-    return {
-      success: true,
-      data: {
-        ...achievement,
-      },
-    };
-  }
-
-  updateOne(id: number, updateAchievementDto: UpdateAchievementDto) {
-    let [achievement] = this.achievements.filter((ach) => ach.id === id);
-    achievement = { ...achievement, ...updateAchievementDto };
-
-    this.achievements = this.achievements.map((item) => {
-      return item.id === id ? achievement : item;
+  async createOne(data: Prisma.AchievementCreateInput): Promise<Achievement> {
+    return this.prisma.achievement.create({
+      data,
     });
-
-    return {
-      success: true,
-      data: { ...achievement },
-    };
   }
 
-  deleteOne(id: number) {
-    const achievement = this.achievements.find((item) => item.id === id);
-    this.achievements = this.achievements.filter((item) => item.id !== id);
-    return {
-      success: true,
-      data: { ...achievement },
-    };
+  async findOne(
+    where: Prisma.AchievementWhereUniqueInput,
+  ): Promise<Achievement> {
+    return this.prisma.achievement.findUnique({ where });
+  }
+
+  async updateOne(params: {
+    where: Prisma.AchievementWhereUniqueInput;
+    data: Prisma.AchievementUpdateInput;
+  }) {
+    const { where, data } = params;
+    return this.prisma.achievement.update({
+      data,
+      where,
+    });
+  }
+
+  async deleteOne(where: Prisma.AchievementWhereUniqueInput) {
+    return this.prisma.achievement.delete({
+      where,
+    });
   }
 }
