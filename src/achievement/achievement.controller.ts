@@ -7,11 +7,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  ValidationPipe,
 } from '@nestjs/common';
+import { Achievement as AchievementModel } from '@prisma/client';
+
 import { AchievementService } from './achievement.service';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
-import { Achievement as AchievementModel } from '@prisma/client';
 
 @Controller('achievement')
 export class AchievementController {
@@ -24,20 +26,16 @@ export class AchievementController {
 
   @Post()
   createOne(
-    @Body() createAchievementDto: CreateAchievementDto,
+    @Body(ValidationPipe) createAchievementDto: CreateAchievementDto,
   ): Promise<AchievementModel> {
     return this.achievementService.createOne(createAchievementDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<AchievementModel> {
-    return this.achievementService.findOne({ id });
-  }
-
   @Patch(':id')
   update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateAchievementDto: UpdateAchievementDto,
+    @Param('id', ParseIntPipe)
+    id: number,
+    @Body(ValidationPipe) updateAchievementDto: UpdateAchievementDto,
   ): Promise<AchievementModel> {
     return this.achievementService.updateOne({
       where: { id },
