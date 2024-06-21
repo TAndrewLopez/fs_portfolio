@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/createAuth';
-import { UpdateAuthDto } from './dto/updateAuth';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { compare } from 'bcryptjs';
+
+import { UserService } from 'src/user/user.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(private readonly userService: UserService) {}
+
+  async validateUser(credentials: LoginDto) {
+    const { email, password } = credentials;
+    const user = await this.userService.findUnique({ email });
+
+    if (!user && !(await compare(password, user.hashedPassword))) {
+      throw new UnauthorizedException('Invalid credentials.');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { hashedPassword, ...result } = user;
+    return result;
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async login(credentials: LoginDto) {
+    const user = await this.validateUser(credentials);
+
+    return {
+      user,
+      backendToken: {
+        accessToken: '',
+        refreshToken: '',
+      },
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async refreshToken(user: any) {
+    return {
+      user,
+      backendToken: {
+        accessToken: '',
+        refreshToken: '',
+      },
+    };
   }
 }

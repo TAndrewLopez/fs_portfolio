@@ -1,42 +1,30 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { User as UserModel } from '@prisma/client';
+
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/createAuth';
-import { UpdateAuthDto } from './dto/updateAuth';
+import { UserService } from 'src/user/user.service';
+import { CreateUserDto } from 'src/user/dto/createUser.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post('register')
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  async registerUser(
+    @Body(ValidationPipe) data: CreateUserDto,
+  ): Promise<Omit<UserModel, 'hashedPassword'>> {
+    return this.userService.createOne(data);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Post('login')
+  async loginUser(@Body() credentials: LoginDto) {
+    return this.authService.login(credentials);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
-  }
+  @Post('refreshToken')
+  async refreshToken() {}
 }

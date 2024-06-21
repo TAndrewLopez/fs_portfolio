@@ -19,7 +19,7 @@ export class MessageService {
     }
   }
 
-  async findOne(where: Prisma.MessageWhereUniqueInput) {
+  async findOne(where: Prisma.MessageWhereUniqueInput): Promise<MessageModel> {
     try {
       return await this.prisma.message.findUnique({ where });
     } catch (error) {
