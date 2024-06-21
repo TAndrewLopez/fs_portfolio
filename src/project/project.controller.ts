@@ -42,7 +42,7 @@ export class ProjectController {
   ): Promise<ProjectModel> {
     return this.projectService.updateOne({
       where: { id },
-      data: { ...updateProjectDto },
+      data: updateProjectDto,
     });
   }
 

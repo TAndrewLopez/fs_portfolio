@@ -8,6 +8,6 @@ export class UserController {
 
   @Get(':id')
   async getUserProfile(@Param('id', ParseIntPipe) id: number) {
-    return await this.userService.findUnique({ id });
+    return this.userService.findUnique({ id });
   }
 }
